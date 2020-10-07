@@ -9,8 +9,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 
-import com.example.simplecurriculum.R;
-
 public class AccountViewModel extends AndroidViewModel {
 
     private SavedStateHandle handle;
@@ -48,6 +46,10 @@ public class AccountViewModel extends AndroidViewModel {
         }
     }
 
+    /**
+     * 保存勾选状态
+     */
+    @SuppressWarnings("ConstantConditions")
     public void saveCheck() {
         SharedPreferences.Editor editor = shp.edit();
         editor.putBoolean(ISAUTO_KEY, getIsAuto().getValue());
@@ -55,6 +57,9 @@ public class AccountViewModel extends AndroidViewModel {
         editor.apply();
     }
 
+    /**
+     * 保存账户密码
+     */
     public void saveAccount() {
         SharedPreferences.Editor editor = shp.edit();
         editor.putString(STUDENT_ID_KEY, getStudentId().getValue());

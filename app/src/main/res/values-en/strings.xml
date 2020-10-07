@@ -6,4 +6,7 @@
     <string name="PassWord">password</string>
     <string name="SavePassword">save</string>
     <string name="AutoLogin">auto</string>
+    <string name="SwitchVersion">switch version</string>
+    <string name="About">about</string>
+    <string name="UpData">updata</string>
 </resources>

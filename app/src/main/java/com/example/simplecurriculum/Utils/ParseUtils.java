@@ -20,24 +20,36 @@ public class ParseUtils {
         document = Jsoup.parse(html);
     }
 
+    /**
+     * 判断是否登录成功
+     * @return true成功，则失败
+     */
     public boolean parseIsLogin(){
         Elements font = document.select("font");
         if (!font.isEmpty()){
             String text = font.text();
-            return "".equals(text);
+            System.out.println(text);
+            return !"请先登录系统".equals(text);
         }
         return true;
     }
 
-    public String parseVersion(){
+    /**
+     * 课程表版本，
+     * 是否显示任课老师信息
+     * @return 返回字符串
+     */
+    public String parseVersion(int i){
         trElements = document.select("tbody").last().getElementsByTag("tr");
         Elements input = trElements.select("input");
-        //TODO get(i)可以在方法的获取参数选择
-        String COURSE_VERSION_ONE = input.get(0).attr("name");
-        String COURSE_VERSION_TWO = input.get(1).attr("name");
-        return COURSE_VERSION_ONE;
+        return input.get(i).attr("name");
     }
 
+    /**
+     * 把网页解析，把课程信息存储到List
+     * @param version
+     * @return
+     */
     public List<Course> parseCourse(String version){
         //先记录课程信息
         Map<Integer, Course.CourseInfo> courseInfoMap = new HashMap<>();

@@ -3,6 +3,7 @@ package com.example.simplecurriculum;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Rect;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,21 +81,22 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
         } else {
             Course.CourseInfo courseInfo = courseInfoList.get(position % 7 - 1);
             if (difference == 1){
-                String classTime = null;
+                String classTime = "<big><big>"+courseInfo.getClassTime()+"</big></big>";
                 if (position == 1){
-                    classTime = courseInfo.getClassTime()+"\n8:30 - 9:10\n9:15 - 9:55";
+                    classTime += "\n8:30 - 9:10\n9:15 - 9:55";
                 }else if (position == 2){
-                    classTime = courseInfo.getClassTime()+"\n10:10 - 10:50\n10:55 - 11:35";
+                    classTime += "\n10:10 - 10:50\n10:55 - 11:35";
                 }else if (position == 3){
-                    classTime = courseInfo.getClassTime()+"\n11:40 - 12:20";
+                    classTime += "\n11:40 - 12:20";
                 }else if (position == 4){
-                    classTime = courseInfo.getClassTime()+"\n14:20 - 15:00\n15:05 - 15:45";
+                    classTime += "\n14:20 - 15:00\n15:05 - 15:45";
                 }else if (position == 5){
-                    classTime = courseInfo.getClassTime()+"\n16:00 - 16:40\n16:45 - 17:25";
+                    classTime += "\n16:00 - 16:40\n16:45 - 17:25";
                 }else if (position == 6){
-                    classTime = courseInfo.getClassTime()+"\n19:10 - 19:50\n20:00 - 20:40\n20:50 - 21:30";
+                    classTime += "\n19:10 - 19:50\n20:00 - 20:40\n20:50 - 21:30";
                 }
-                holder.courseInfoTV.setText(classTime);
+                holder.courseInfoTV.setTextSize(10);
+                holder.courseInfoTV.setText(Html.fromHtml(classTime,Html.FROM_HTML_MODE_COMPACT));
                 alertDialogBuilder.setMessage(classTime);
             }else {
                 String courseInfoString = courseInfo.getCourseInfoString();

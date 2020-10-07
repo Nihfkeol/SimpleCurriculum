@@ -23,12 +23,16 @@ import androidx.databinding.DataBindingUtil;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
+import okhttp3.Response;
 
 @SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
@@ -49,12 +53,15 @@ public class MainActivity extends AppCompatActivity {
         binding.setData(viewModel);
         binding.setLifecycleOwner(this);
 
-        boolean isCheckeAuto = viewModel.getIsAuto().getValue();
-        if (isCheckeAuto){
-            Intent intent = new Intent();
-            intent.setClass(MainActivity.this, ShowCurriculumActivity.class);
-            startActivity(intent);
-            finish();
+        Intent intent = getIntent();
+        if (!intent.hasExtra("from")) {
+            boolean isCheckeAuto = viewModel.getIsAuto().getValue();
+            if (isCheckeAuto) {
+                Intent intent2 = new Intent();
+                intent2.setClass(MainActivity.this, ShowCurriculumActivity.class);
+                startActivity(intent2);
+                finish();
+            }
         }
 
         boolean isCheckSave = viewModel.getIsSave().getValue();
@@ -75,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.checkBoxSave.setOnClickListener(v -> {
             boolean isCheck = binding.checkBoxSave.isChecked();
-             viewModel.setIsSave(isCheck);
-             if (!isCheck){
-                 viewModel.setIsAuto(isCheck);
-             }
+            viewModel.setIsSave(isCheck);
+            if (!isCheck) {
+                viewModel.setIsAuto(isCheck);
+            }
         });
 
         //监听输入框输入状态存入数据
@@ -136,12 +143,27 @@ public class MainActivity extends AppCompatActivity {
             new Thread(() -> {
                 NetWorkUtils netWorkUtils = new NetWorkUtils(cookieJar);
                 //返回结果是否登录成功
-                String loginHtml = netWorkUtils.isLogin(viewModel.getStudentId().getValue(), viewModel.getPassword().getValue());
-                ParseUtils parseUtils = new ParseUtils(loginHtml);
-                Boolean isLogin = parseUtils.parseIsLogin();
-                Message message = new Message();
-                message.obj = isLogin;
-                myHandle.sendMessage(message);
+                Callback callback = new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Message message = new Message();
+                        message.what = 0;
+                        myHandle.sendMessage(message);
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        String loginHtml = response.body().string();
+                        ParseUtils parseUtils = new ParseUtils(loginHtml);
+                        Boolean isLogin = parseUtils.parseIsLogin();
+                        Message message = new Message();
+                        message.what = 1;
+                        message.obj = isLogin;
+                        myHandle.sendMessage(message);
+                    }
+                };
+                netWorkUtils.isLogin(viewModel.getStudentId().getValue(), viewModel.getPassword().getValue(), callback);
+
             }).start();
 
 
@@ -152,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (!viewModel.getIsSave().getValue()){
+        if (!viewModel.getIsSave().getValue()) {
             viewModel.clearAccount();
         }
     }
@@ -162,34 +184,37 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            boolean isLogin = (boolean) msg.obj;
-
-            if (isLogin) {
-                Cookie cookie = cookieStore.get(0);
-                Intent intent = new Intent();
-                if (viewModel.getIsSave().getValue()) {
-                    //如果勾选了保存，那么就保存账户
-                    viewModel.saveAccount();
-                    //获取是否自动登录
-                    boolean isAuto = viewModel.getIsAuto().getValue();
-                    intent.putExtra(getResources().getString(R.string.IS_AUTO), isAuto);
-                    //勾选了自动登录，保存cookie
-                    if (isAuto){
-                        CookieUtils cookieUtils = new CookieUtils();
-                        cookieUtils.saveCookieToSHP(getApplicationContext(),cookie);
+            if (msg.what == 1) {
+                boolean isLogin = (boolean) msg.obj;
+                if (isLogin) {
+                    Cookie cookie = cookieStore.get(0);
+                    Intent intent = new Intent();
+                    if (viewModel.getIsSave().getValue()) {
+                        //如果勾选了保存，那么就保存账户
+                        viewModel.saveAccount();
+                        //获取是否自动登录
+                        boolean isAuto = viewModel.getIsAuto().getValue();
+                        intent.putExtra(getResources().getString(R.string.IS_AUTO), isAuto);
+                        //勾选了自动登录，保存cookie
+                        if (isAuto) {
+                            CookieUtils cookieUtils = new CookieUtils();
+                            cookieUtils.saveCookieToSHP(getApplicationContext(), cookie);
+                        }
+                    } else {
+                        //没有勾选保存，则把储存文件中的所有数据清除
+                        viewModel.clearAccount();
                     }
-                }else {
-                    //没有勾选保存，则把储存文件中的所有数据清除
+                    intent.setClass(MainActivity.this, ShowCurriculumActivity.class);
+                    intent.putExtra(getResources().getString(R.string.COOKIE_KEY), String.valueOf(cookie));
+                    startActivity(intent);
+                    finish();
+                } else {
+                    //登录失败，清除保存的帐号密码
                     viewModel.clearAccount();
+                    Toast.makeText(getApplicationContext(), "帐号或用户名错误", Toast.LENGTH_SHORT).show();
                 }
-                intent.setClass(MainActivity.this, ShowCurriculumActivity.class);
-                intent.putExtra(getResources().getString(R.string.COOKIE_KEY), String.valueOf(cookie));
-                startActivity(intent);
-                finish();
-            } else {
-                //登录失败，清除保存的帐号密码
-                viewModel.clearAccount();
-                Toast.makeText(getApplicationContext(), "帐号或用户名错误 ", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getApplicationContext(), "网络连接失败", Toast.LENGTH_SHORT).show();
             }
         }
 

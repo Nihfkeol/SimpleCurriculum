@@ -20,6 +20,7 @@ public class Course {
     /**
      * 先把信息列出来之后再分类
      */
+    @SuppressWarnings("InnerClassMayBeStatic")
     @ToString
     public class CourseInfo {
         //课程时间,获取的数据第一列是课程时间表

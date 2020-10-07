@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="SHP_NAME" tools:ignore="MissingTranslation">MY_DATA</string>
-    <string name="COOKIE_SHP_NAME" tools:ignore="MissingTranslation">MY_COOKIE</string>
-    <string name="STUDENT_ID" tools:ignore="MissingTranslation">STUDENT_ID</string>
-    <string name="PASSWORD" tools:ignore="MissingTranslation">PASSWORD</string>
-    <string name="COOKIE_KEY" tools:ignore="MissingTranslation">COOKIE</string>
-    <string name="IS_SAVE" tools:ignore="MissingTranslation">IS_SAVE</string>
-    <string name="IS_AUTO" tools:ignore="MissingTranslation">IS_AUTO</string>
-    <string name="defStringValue" tools:ignore="MissingTranslation"/>
+<resources>
+    <!-- 存于shp文件中的值 -->
+    <string name="SHP_NAME" translatable="false">MY_DATA</string>
+    <string name="COOKIE_SHP_NAME" translatable="false">MY_COOKIE</string>
+    <string name="STUDENT_ID" translatable="false">STUDENT_ID</string>
+    <string name="PASSWORD" translatable="false">PASSWORD</string>
+    <string name="COOKIE_KEY" translatable="false">COOKIE</string>
+    <string name="IS_SAVE" translatable="false">IS_SAVE</string>
+    <string name="IS_AUTO" translatable="false">IS_AUTO</string>
+    <string name="VERSION_KEY" translatable="false">VERSION</string>
+    <!-- 存于本地文件的文件名 -->
+    <string name="FILE_NAME" translatable="false">xskb</string>
+    <!-- 默认值 -->
+    <string name="defStringValue" translatable="false"/>
     <bool name="defBool">false</bool>
-
 </resources>
