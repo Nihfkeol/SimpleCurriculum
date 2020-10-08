@@ -102,6 +102,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
                 String courseInfoString = courseInfo.getCourseInfoString();
                 holder.courseInfoTV.setText(courseInfoString);
                 String[] split = courseInfoString.split("----------------------");
+                if (split.length == 1){
+                    split = courseInfoString.split("---------------------");
+                }
                 alertDialogBuilder.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,split),null);
             }
 
