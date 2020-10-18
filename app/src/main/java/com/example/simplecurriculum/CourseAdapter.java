@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import lombok.SneakyThrows;
 
@@ -28,11 +29,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
     private List<Course.CourseInfo> courseInfoList;
     private int LayoutWidth;
     private Context context;
+    private int[] colors;
 
     public CourseAdapter(Context context, List<Course> courses, int width) {
         this.courses = courses;
         this.LayoutWidth = width;
         this.context = context;
+        colors = new int[4];
+        colors[0] = context.getResources().getColor(R.color.colorRecyclerOne, context.getTheme());
+        colors[1] = context.getResources().getColor(R.color.colorRecyclerTwo, context.getTheme());
+        colors[2] = context.getResources().getColor(R.color.colorRecyclerThree, context.getTheme());
+        colors[3] = context.getResources().getColor(R.color.colorRecyclerFour, context.getTheme());
     }
 
     @NonNull
@@ -56,6 +63,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
     @SneakyThrows
     @Override
     public void onBindViewHolder(@NonNull CourseAdapter.ItemViewHolder holder, int position) {
+        //根据是否有课来决定是否显示提示框
+        boolean isShowDialog = false;
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         int countCourse = position % 7;
         if (countCourse == 0) {
@@ -72,11 +81,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
                 long countDay = (diff/nd)/6;
                 String text = "第" + countDay + "周";
                 holder.courseInfoTV.setText(text);
-                alertDialogBuilder.setMessage(text);
             }else {
                 String week = course.getWeek();
                 holder.courseInfoTV.setText(week);
-                alertDialogBuilder.setMessage(week);
             }
         } else {
             Course.CourseInfo courseInfo = courseInfoList.get(position % 7 - 1);
@@ -97,7 +104,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
                 }
                 holder.courseInfoTV.setTextSize(10);
                 holder.courseInfoTV.setText(Html.fromHtml(classTime,Html.FROM_HTML_MODE_COMPACT));
-                alertDialogBuilder.setMessage(classTime);
             }else {
                 String courseInfoString = courseInfo.getCourseInfoString();
                 holder.courseInfoTV.setText(courseInfoString);
@@ -105,14 +111,22 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ItemViewHo
                 if (split.length == 1){
                     split = courseInfoString.split("---------------------");
                 }
-                alertDialogBuilder.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,split),null);
+                //有课才设置提示框信息，设置背景颜色
+                if (!"".equals(courseInfoString)){
+                    isShowDialog = true;
+                    alertDialogBuilder.setAdapter(new ArrayAdapter<>(context,android.R.layout.simple_list_item_1,split),null);
+                    holder.cardView.setCardBackgroundColor(colors[new Random().nextInt(4)]);
+                }
+
             }
 
         }
-        holder.cardView.setOnClickListener(v -> {
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-        });
+        if (isShowDialog){
+            holder.cardView.setOnClickListener(v -> {
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            });
+        }
     }
 
     @Override

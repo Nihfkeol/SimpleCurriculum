@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
             if (isCheck) {
                 viewModel.setIsSave(isCheck);
             }
+            //保存勾选状态
+            viewModel.saveCheck();
         });
         binding.checkBoxSave.setOnClickListener(v -> {
             boolean isCheck = binding.checkBoxSave.isChecked();
@@ -86,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
             if (!isCheck) {
                 viewModel.setIsAuto(isCheck);
             }
+            //保存勾选状态
+            viewModel.saveCheck();
         });
 
         //监听输入框输入状态存入数据
@@ -138,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
         myHandle = new MyHandle();
 
         binding.buttonLogin.setOnClickListener(v -> {
-            //保存勾选状态
-            viewModel.saveCheck();
             new Thread(() -> {
                 NetWorkUtils netWorkUtils = new NetWorkUtils(cookieJar);
                 //返回结果是否登录成功

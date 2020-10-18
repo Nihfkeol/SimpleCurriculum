@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">简陋课程表</string>
+    <string name="app_name">课程表</string>
     <string name="Login">登录</string>
     <string name="Student_ID">学号</string>
     <string name="PassWord">密码</string>
